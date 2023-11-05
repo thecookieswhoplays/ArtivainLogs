@@ -1,0 +1,29 @@
+{
+  "name": "artivain-logs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thecookieswhoplays/ArtivainLogs.git"
+  },
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup index.ts --format cjs, esm --dts",
+    "release": "pnpm run build && changeset publish",
+    "lint": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "dependencies": {
+    "@changesets/cli": "^2.26.2",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/request": "^2.48.11"
+  }
+}
