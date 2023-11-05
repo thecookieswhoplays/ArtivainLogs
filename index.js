@@ -10,14 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LogsObject = void 0;
-function apiCall(url, apiKey, content, from, level, args) {
+function apiCall(url, apiKey, content, from, level, doLog, args) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
         headers.append("Authorization", apiKey);
         args = args;
         const formatedContent = format(content, args);
-        console.log(url);
         const response = yield fetch(url, {
             method: "post",
             //   @ts-ignore
@@ -30,6 +29,9 @@ function apiCall(url, apiKey, content, from, level, args) {
             }),
             headers: headers,
         });
+        if (doLog) {
+            console.log(formatedContent);
+        }
         if (response.status === 200) {
             resolve({ success: true });
         }
@@ -39,15 +41,22 @@ function apiCall(url, apiKey, content, from, level, args) {
     }));
 }
 class LogsObject {
-    constructor(url, apiKey, from, level, doLog) {
-        this.apiKey = apiKey;
-        this.from = from;
-        this.level = level;
-        this.url = appendToUrl(url, "/api.php");
-        this.doLog = doLog !== null && doLog !== void 0 ? doLog : false;
+    constructor(
+    // url: string,
+    // apiKey: string,
+    // from: string | "api",
+    // level: number,
+    // doLog?: boolean
+    config) {
+        var _a;
+        this.apiKey = config.apiKey;
+        this.from = config.from;
+        this.level = config.level;
+        this.url = appendToUrl(config.url, "/api.php");
+        this.doLog = (_a = config.doLog) !== null && _a !== void 0 ? _a : false;
     }
     log(content, args) {
-        return apiCall(this.url, this.apiKey, content, this.from, this.level, args);
+        return apiCall(this.url, this.apiKey, content, this.from, this.level, this.doLog, args);
     }
 }
 exports.LogsObject = LogsObject;
