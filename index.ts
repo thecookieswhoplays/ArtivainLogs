@@ -6,6 +6,7 @@ function apiCall(
   content: string,
   from: string,
   level: number,
+  doLog: boolean,
   args?: object
 ): Promise<{ success: true } | { success: false; error: object }> {
   return new Promise(async (resolve, reject) => {
@@ -14,7 +15,6 @@ function apiCall(
     headers.append("Authorization", apiKey);
     args = args;
     const formatedContent = format(content, args);
-    console.log(url);
     const response = await fetch(url, {
       method: "post",
       //   @ts-ignore
@@ -27,6 +27,9 @@ function apiCall(
       }),
       headers: headers,
     });
+    if (doLog) {
+      console.log(formatedContent);
+    }
     if (response.status === 200) {
       resolve({ success: true });
     } else {
@@ -42,23 +45,38 @@ export class LogsObject {
   private level: number;
   private doLog: boolean;
   constructor(
-    url: string,
-    apiKey: string,
-    from: string | "api",
-    level: number,
-    doLog?: boolean
+    // url: string,
+    // apiKey: string,
+    // from: string | "api",
+    // level: number,
+    // doLog?: boolean
+    config: {
+      url: string;
+      apiKey: string;
+      from: string | "api";
+      level: number;
+      doLog?: boolean;
+    }
   ) {
-    this.apiKey = apiKey;
-    this.from = from;
-    this.level = level;
-    this.url = appendToUrl(url, "/api.php");
-    this.doLog = doLog ?? false;
+    this.apiKey = config.apiKey;
+    this.from = config.from;
+    this.level = config.level;
+    this.url = appendToUrl(config.url, "/api.php");
+    this.doLog = config.doLog ?? false;
   }
   log(
     content: string,
     args?: object
   ): Promise<{ success: true } | { success: false; error: object }> {
-    return apiCall(this.url, this.apiKey, content, this.from, this.level, args);
+    return apiCall(
+      this.url,
+      this.apiKey,
+      content,
+      this.from,
+      this.level,
+      this.doLog,
+      args
+    );
   }
 }
 
@@ -77,7 +95,7 @@ function appendToUrl(baseUrl: string, appendString: string): string {
   return baseUrl + appendString;
 }
 
-function format(content: string, args: object) {
+function format(content: string, args?: object) {
   if (!args) {
     return content;
   }
